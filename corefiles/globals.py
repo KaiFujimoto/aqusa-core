@@ -8,7 +8,7 @@ try:
 	nltk.data.find('tokenizers/punkt')
 except:
 	nltk.download('punkt')
-	
+
 try:
 	nltk.data.find('taggers/averaged_perceptron_tagger')
 except:
@@ -63,7 +63,10 @@ def extract_indicator_phrases(text, indicator_type):
     return max(indicator_phrase, key=len) if indicator_phrase else None
   else:
     return text
-	
+
 def add_defect(story_id, kind, subkind, message, story_title):
 	defects.append(Defect(story_id, kind, subkind, message, story_title))
-	
+
+def reset_defects():
+	print('hit')
+	defects = []

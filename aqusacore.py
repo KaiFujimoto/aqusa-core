@@ -10,7 +10,7 @@ def main(argv):
 	inputfile = ''
 	outputfile = ''
 	outputformat = 'txt'
-	
+
 	print ('======================================================\n' +
 		'                     AQUSA-Core\n' +
 		'    Requirements Engineering Lab, Utrecht University\n' +
@@ -38,21 +38,21 @@ def main(argv):
 	if inputfile == '':
 		print (' You need to specify a valid input file')
 		sys.exit()
-	
+
 	if os.path.exists('input/' + inputfile):
 		with open('input/' + inputfile) as f:
 			raw = f.readlines()
-	else: 
+	else:
 		print ('The input file "input/' + inputfile + '" does not exist')
 		sys.exit(2)
-		
+
 	allStories = Stories(inputfile)
 	init_format(outputformat)
 
+	print(allStories)
 
-		
 	i = 0
-	for r in raw: 
+	for r in raw:
 	   i = i + 1
 	   if r.strip() == "":
 	      continue
@@ -63,14 +63,15 @@ def main(argv):
 	   MinimalAnalyzer.minimal(story)
 	   Analyzer.unique(story,allStories)
 	   allStories.add_story(story)
-	   
+
 	allStories = Analyzer.get_common_format(allStories)
 
 	for story in allStories.stories:
 		Analyzer.uniform(story,allStories)
-	
+
 	output_text = ""
-	
+	test = []
+
 	if outputformat == 'html':
 		with tag('html'):
 			with tag('head'):
@@ -98,13 +99,15 @@ def main(argv):
 		output_text = doc.getvalue()
 	else:
 		for defect in defects:
+			test = test + defect.return_dict()
 			output_text = output_text + defect.print_txt()
 
 	if outputfile == '':
+		print(test)
 		print (output_text)
 	else:
 		f = open("output/" + outputfile + "." + outputformat, "w")
-		f.write(output_text) 
-	
+		f.write(output_text)
+
 if __name__ == "__main__":
    main(sys.argv[1:])

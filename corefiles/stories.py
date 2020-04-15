@@ -7,6 +7,8 @@ import operator
 import collections
 from corefiles.stories import *
 from corefiles.globals import *
+from corefiles.analyzer import *
+
 
 class Stories:
 	def __init__(self, project):
@@ -15,6 +17,9 @@ class Stories:
 
 	def add_story(self, story):
 		self.stories.append(story)
+
+	def stories_list(self):
+		return self.stories
 
 	def has_story(self, other_story):
 		if len(self.stories) == 0:
@@ -35,6 +40,15 @@ class Story:
 	def chunk(self):
 		StoryChunker.chunk_on_indicators(self)
 		return self
+
+	def return_dict(self):
+		return {
+			'id': self.id,
+			'title': self.title,
+			'role': self.role,
+			'means': self.means,
+			'ends': self.ends
+		}
 
 	def equals_to(self, another):
 		self_role = self.role[len(extract_indicator_phrases(self.role, 'role')):]

@@ -1,5 +1,5 @@
 
-# Classes: Stories, Defect, Project  
+# Classes: Stories, Defect, Project
 
 class Stories(db.Model):
   id = db.Column(db.Integer, primary_key=True)
@@ -92,7 +92,7 @@ class Projects(db.Model):
 
   def delete(self):
     db.session.delete(self)
-    db.session.commit() 
+    db.session.commit()
 
   def save(self):
     db.session.add(self)
@@ -102,7 +102,7 @@ class Projects(db.Model):
 
   def process_csv(self, path):
     stories = pandas.read_csv(path, header=-1)
-    for story in stories[0]: 
+    for story in stories[0]:
       Stories.create(text=story, project_id=self.id)
     self.analyze()
     return None
@@ -118,7 +118,7 @@ class Projects(db.Model):
         print('')
     self.format = ', '.join(most_common_format)
     if self.format == "": self.format = "As a, I want to, So that"
-    self.save() 
+    self.save()
     return "New format is: " + self.format
 
   def analyze(self):
@@ -159,6 +159,7 @@ class Defects(db.Model):
   def save(self):
     db.session.add(self)
     db.session.commit()
+    print('ha')
     db.session.merge(self)
     return self
 
@@ -227,7 +228,7 @@ class Analyzer:
 
   def atomic_rule(chunk, kind):
     sentences_invalid = []
-    if chunk: 
+    if chunk:
       for x in CONJUNCTIONS:
         if x in chunk.lower():
           if kind == 'means':
@@ -277,7 +278,7 @@ class Analyzer:
     for word in word_array:
       if not wordnet.synsets(word): result = True
     return result
-    
+
 
   def identical_rule(story):
     identical_stories = Stories.query.filter((Stories.title==story.title) & (Stories.project_id == int(story.project_id))).all()
@@ -316,7 +317,7 @@ class Analyzer:
     if len(chunks) == 1: result = True
     for x in range(0,len(chunks)):
       if nltk.metrics.distance.edit_distance(chunks[x].lower(), project_format[x].lower()) > 3:
-        result = True 
+        result = True
     return result
 
   def well_formed_content_highlight(story_part, kind):
@@ -333,7 +334,7 @@ class Analyzer:
   def replace_tag_of_special_words(sentence):
     index = 0
     for word in sentence:
-      if word[0] in SPECIAL_WORDS:  
+      if word[0] in SPECIAL_WORDS:
         lst = list(sentence[index])
         lst[1] = SPECIAL_WORDS[word[0]]
         sentence[index] = tuple(lst)
@@ -450,13 +451,13 @@ class MinimalAnalyzer:
         highlight = MinimalAnalyzer.indicator_repetition_highlight(story.title, indicators[indicator], 'high')
         Defects.create_unless_duplicate(highlight, 'minimal', 'indicator_repetition', 'high', story)
     return story
-  
+
   def indicator_repetition_highlight(text, ranges, severity):
     indices = []
     for rang in ranges:
       indices += [[rang[0], text[ rang[0]:rang[1] ] ]]
     return Analyzer.highlight_text_with_indices(text, indices, severity)
-  
+
   def remove_indicator_repetition_exceptions(indicators, story):
     # exception #1: means indicator after ends indicator
     for means_indicator in indicators['means']:
@@ -510,7 +511,7 @@ class StoryChunker:
   def detect_all_indicators(story):
     indicators = {'role': [], "means": [], 'ends': []}
     for indicator in indicators:
-      for indicator_phrase in eval(indicator.upper() + '_INDICATORS'):  
+      for indicator_phrase in eval(indicator.upper() + '_INDICATORS'):
         if story.title:
           for indicator_match in re.compile('(%s)' % indicator_phrase.lower()).finditer(story.title.lower()):
             indicators[indicator] += [indicator_match.span()]
@@ -551,7 +552,7 @@ class StoryChunker:
       if type(leaf) is not tuple:
         if leaf[0][0] == 'I':
           break
-        elif leaf.label() == 'NP': 
+        elif leaf.label() == 'NP':
           return_string.append(leaf[0][0])
         else:
           break
@@ -584,7 +585,7 @@ class CorrectDefect:
 
   def correct_no_means_comma(defect):
     story = defect.story
-    story.title = story.role + ', ' + story.means 
+    story.title = story.role + ', ' + story.means
     if story.ends: story.title = story.title + ' ' + story.ends
     story.save()
     return story

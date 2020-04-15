@@ -13,5 +13,5 @@ class WellFormedAnalyzer:
 
   def role(story):
     if not story.role:
-      add_defect(str(story.id), 'well_formed', 'no_role', 'Add for who this story is', story.title)
+      add_defect(str(story.id), 'well_formed', 'no_role', 'Add who this story is for', story.title)
     return story
